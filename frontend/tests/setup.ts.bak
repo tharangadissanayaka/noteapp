@@ -1,0 +1,34 @@
+import { TestSetup } from './utils/TestSetup';
+
+// Global setup for all tests
+beforeAll(async () => {
+  try {
+    await TestSetup.setupDriver();
+    console.log('WebDriver setup completed successfully');
+  } catch (error) {
+    console.error('Failed to setup WebDriver:', error);
+    throw error;
+  }
+}, 60000); // Increased timeout to 60 seconds
+
+// Global teardown for all tests
+afterAll(async () => {
+  try {
+    await TestSetup.teardownDriver();
+    console.log('WebDriver teardown completed');
+  } catch (error) {
+    console.error('Failed to teardown WebDriver:', error);
+  }
+}, 30000);
+
+// Setup before each test
+beforeEach(async () => {
+  try {
+    // Navigate to home page before each test
+    await TestSetup.navigateToPage();
+    await TestSetup.sleep(1000); // Wait for page to load
+  } catch (error) {
+    console.error('Failed to navigate to page:', error);
+    throw error;
+  }
+}, 30000);

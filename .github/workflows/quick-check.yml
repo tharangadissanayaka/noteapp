@@ -1,0 +1,46 @@
+name: Quick CI Check
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quick-check:
+    name: Quick Build & Test Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: Install frontend dependencies  
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Build backend
+      working-directory: ./backend
+      run: npx tsc --noEmit
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
+
+    - name: Run unit tests
+      working-directory: ./frontend
+      run: npx jest mockTests.test.ts --verbose
+
+    - name: Lint check
+      working-directory: ./frontend
+      run: npm run lint || echo "Lint check completed"

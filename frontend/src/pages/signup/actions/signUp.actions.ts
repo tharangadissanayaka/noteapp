@@ -1,6 +1,5 @@
 import { doesEmailExist } from "supertokens-web-js/recipe/emailpassword";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
-import { sendVerificationEmail } from "supertokens-web-js/recipe/emailverification";
 import type { User } from "supertokens-web-js/types";
 
 export async function verifyEmailUnique(email: string): Promise<boolean> {
@@ -39,17 +38,17 @@ export async function signUpUser(email: string, password: string): Promise<{ sta
 
         if (response.status === "FIELD_ERROR") {
             // one of the input formFields failed validation
-            response.formFields.forEach(formField => {
+            for (const formField of response.formFields) {
                 if (formField.id === "email") {
                     // Email validation failed (for example incorrect email syntax),
                     // or the email is not unique.
-                    return { status: false, msg: formField.error };
+                    return { status: false, msg: formField.error, user: null };
                 } else if (formField.id === "password") {
                     // Password validation failed.
                     // Maybe it didn't match the password strength
-                    return { status: false, msg: formField.error };
+                    return { status: false, msg: formField.error, user: null };
                 }
-            })
+            }
         } else if (response.status === "SIGN_UP_NOT_ALLOWED") {
             // the reason string is a user friendly message
             // about what went wrong. It can also contain a support code which users
